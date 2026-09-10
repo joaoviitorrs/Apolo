@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Apólo - Lulu da Pomerânia</title>
+    <style>
+        :root {
+            --primary: #ff6b81;
+            --bg: #f7f9fc;
+            --card: #ffffff;
+            --text: #2f3640;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 { color: var(--primary); margin-bottom: 5px; }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #dfe4ea;
+            cursor: pointer;
+            border-radius: 20px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .section {
+            display: none;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .section.active {
+            display: block;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            padding: 10px;
+            border: 1px solid #ced6e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        button.submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            background: #f1f2f6;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Painel do Apólo 🐾</h1>
+        <p>Lulu da Pomerânia Anão • Nascido em 10/06/2026</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('saude')">Saúde & Vacinas</button>
+        <button class="tab-btn " onclick="switchTab('adestramento')">Adestramento & Truques</button>
+        <button class="tab-btn" onclick="switchTab('rotina')">Rotina & Diário</button>
+    </div>
+
+    <!-- SEÇÃO SAÚDE -->
+    <div id="saude" class="section active">
+        <h2>Controle de Saúde</h2>
+        <form id="health-form" onsubmit="addHealthItem(event)">
+            <input type="text" id="h-title" placeholder="Ex: Vacina V10 (Dose 1) ou Vermífugo" required>
+            <input type="date" id="h-date" required>
+            <input type="text" id="h-notes" placeholder="Observações (Lote, peso, próxima dose)">
+            <button type="submit" class="submit-btn">Adicionar Registro</button>
+        </form>
+        <h3>Histórico</h3>
+        <ul id="health-list"></ul>
+    </div>
+
+    <!-- SEÇÃO ADESTRAMENTO -->
+    <div id="adestramento" class="section">
+        <h2>Progresso de Adestramento</h2>
+        <form id="training-form" onsubmit="addTrainingItem(event)">
+            <input type="text" id="t-command" placeholder="Ex: Xixi no tapete, Senta, Fica" required>
+            <select id="t-status">
+                <option value="Aprendendo">Aprendendo</option>
+                <option value="Dominado">Dominado</option>
+            </select>
+            <button type="submit" class="submit-btn">Adicionar Comando</button>
+        </form>
+        <h3>Comandos e Hábitos</h3>
+        <ul id="training-list"></ul>
+    </div>
+
+    <!-- SEÇÃO ROTINA -->
+    <div id="rotina" class="section">
+        <h2>Diário e Peso</h2>
+        <form id="routine-form" onsubmit="addRoutineItem(event)">
+            <input type="date" id="r-date" required>
+            <input type="text" id="r-weight" placeholder="Peso atual (ex: 1.2 kg)">
+            <input type="text" id="r-notes" placeholder="Notas do dia (comportamento, alimentação)">
+            <button type="submit" class="submit-btn">Salvar Diário</button>
+        </form>
+        <h3>Histórico de Crescimento</h3>
+        <ul id="routine-list"></ul>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classLis
+t.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // Funções genéricas de armazenamento local (LocalStorage)
+    function getData(key) { return JSON.parse(localStorage.getItem(key)) || []; }
+    function saveData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+
+    // Saúde
+    function addHealthItem(e) {
+        e.preventDefault();
+        const item = {
+            id: Date.now(),
+            title: document.getElementById('h-title').value,
+            date: document.getElementById('h-date').value,
+            notes: document.getElementById('h-notes').value
+        };
+        const data = getData('apollo_health');
+        data.push(item);
+        saveData('apollo_health', data);
+        renderHealth();
+        document.getElementById('health-form').reset();
+    }
+    function deleteHealth(id) {
+        saveData('apollo_health', getData('apollo_health').filter(i => i.id !== id));
+        renderHealth();
+    }
+    function renderHealth() {
+        const list = document.getElementById('health-list');
+        list.innerHTML = getData('apollo_health').map(i => `
+            <li><span><strong>${i.title}</strong> (${i.date})<br><small>${i.notes}</small></span>
+            <button class="delete-btn" onclick="deleteHealth(${i.id})">X</button></li>
+        `).join('');
+    }
+
+    // Adestramento
+    function addTrainingItem(e) {
+        e.preventDefault();
+        const item = {
+            id: Date.now(),
+            command: document.getElementById('t-command').value,
+            status: document.getElementById('t-status').value
+        };
+        const data = getData('apollo_training');
+        data.push(item);
+        saveData('apollo_training', data);
+        renderTraining();
+        document.getElementById('training-form').reset();
+    }
+    function deleteTraining(id) {
+        saveData('apollo_training', getData('apollo_training').filter(i => i.id !== id));
+        renderTraining();
+    }
+    function renderTraining() {
+        const list = document.getElementById('training-list');
+        list.innerHTML = getData('apollo_training').map(i => `
+            <li><span><strong>${i.command}</strong> - <em>${i.status}</em></span>
+            <button class="delete-btn" onclick="deleteTraining(${i.id})">X</button></li>
+        `).join('');
+    }
+
+    // Rotina
+    function addRoutineItem(e) {
+        e.preventDefault();
+        const item = {
+            id: Date.now(),
+            date: document.getElementById('r-date').value,
+            weight: document.getElementById('r-weight').value,
+            notes: document.getElementById('r-notes').value
+        };
+        const data = getData('apollo_routine');
+        data.push(item);
+        saveData('apollo_routine', data);
+        renderRoutine();
+        document.getElementById('routine-form').reset();
+    }
+    function deleteRoutine(id) {
+        saveData('apollo_routine', getData('apollo_routine').filter(i => i.id !== id));
+        renderRoutine();
+    }
+    function renderRoutine() {
+        const list = document.getElementById('routine-list');
+        list.innerHTML = getData('apollo_routine').map(i => `
+            <li><span><strong>Data: ${i.date}</strong> | Peso: ${i.weight}<br><small>${i.notes}</small></span>
+            <button class="delete-btn" onclick="deleteRoutine(${i.id})">X</button></li>
+        `).join('');
+    }
+
+    // Inicializar telas
+    renderHealth();
+    renderTraining();
+    renderRoutine();
+</script>
+</body>
+</html>
