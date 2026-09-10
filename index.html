@@ -3,253 +3,700 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Apólo - Lulu da Pomerânia</title>
+    <title>Diário do Apólo - Lulu da Pomerânia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #ff6b81;
-            --bg: #f7f9fc;
-            --card: #ffffff;
-            --text: #2f3640;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        h1 { color: var(--primary); margin-bottom: 5px; }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .tab-btn {
-            padding: 10px 20px;
-            border: none;
-            background: #dfe4ea;
-            cursor: pointer;
-            border-radius: 20px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-        .section {
-            display: none;
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        .section.active {
-            display: block;
-        }
-        form {
-            display: grid;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        input, select, button {
-            padding: 10px;
-            border: 1px solid #ced6e0;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        button.submit-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            padding: 10px;
-            background: #f1f2f6;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .delete-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
     </style>
 </head>
-<body>
+<body class="bg-amber-50/50 text-slate-800 min-h-screen flex flex-col">
 
-<div class="container">
-    <header>
-        <h1>Painel do Apólo 🐾</h1>
-        <p>Lulu da Pomerânia Anão • Nascido em 10/06/2026</p>
+    <header class="bg-white border-b border-amber-100 shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 bg-amber-500 rounded-full flex items-center justify-center text-white text-xl shadow-md">
+                    <i class="fa-solid fa-dog"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-slate-900 leading-tight">Apólo</h1>
+                    <p class="text-xs text-amber-600 font-medium">Lulu da Pomerânia Anão • <span id="headerAge">Calculando...</span></p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 bg-amber-100/70 px-3 py-1.5 rounded-full text-xs font-semibold text-amber-800">
+                <i class="fa-solid fa-star text-amber-500"></i>
+                <span id="headerPoints">0 Pontos de Treino</span>
+            </div>
+        </div>
     </header>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('saude')">Saúde & Vacinas</button>
-        <button class="tab-btn " onclick="switchTab('adestramento')">Adestramento & Truques</button>
-        <button class="tab-btn" onclick="switchTab('rotina')">Rotina & Diário</button>
+    <nav class="bg-white border-b border-slate-100 sticky top-[65px] z-40 shadow-xs">
+        <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto space-x-2 py-2 no-scrollbar">
+            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-amber-500 text-white shadow-sm flex items-center space-x-2 shrink-0">
+                <i class="fa-solid fa-house"></i> <span>Visão Geral</span>
+            </button>
+            <button onclick="switchTab('training')" id="btn-training" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center space-x-2 shrink-0">
+                <i class="fa-solid fa-graduation-cap"></i> <span>Adestramento</span>
+            </button>
+            <button onclick="switchTab('health')" id="btn-health" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center space-x-2 shrink-0">
+                <i class="fa-solid fa-syringe"></i> <span>Saúde & Vacinas</span>
+            </button>
+            <button onclick="switchTab('routine')" id="btn-routine" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center space-x-2 shrink-0">
+                <i class="fa-solid fa-clock"></i> <span>Rotina Diária</span>
+            </button>
+            <button onclick="switchTab('tips')" id="btn-tips" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center space-x-2 shrink-0">
+                <i class="fa-solid fa-lightbulb"></i> <span>Dicas do Spitz</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- TAB: DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Welcome Card -->
+            <div class="bg-gradient-to-r from-amber-500 to-orange-400 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
+                <div class="relative z-10 space-y-2 mb-4 md:mb-0">
+                    <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-medium">Nascimento: 10/06/2026</span>
+                    <h2 class="text-2xl md:text-3xl font-bold">Olá, paizinho(a) do Apólo! 🐾</h2>
+                    <p class="text-amber-100 text-sm max-w-xl">O Apólo é um Lulu da Pomerânia super especial. Acompanhe o desenvolvimento, vacinas e comandos diários dele aqui.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center border border-white/20 z-10 shrink-0">
+                    <div class="text-xs uppercase tracking-wider text-amber-100 font-semibold">Idade Atual</div>
+                    <div id="dashboardAge" class="text-2xl font-black mt-1">--</div>
+                </div>
+                <!-- Background decoration icon -->
+                <div class="absolute -right-6 -bottom-6 text-white/10 text-9xl pointer-events-none">
+                    <i class="fa-solid fa-dog"></i>
+                </div>
+            </div>
+
+            <!-- Quick Metrics Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center space-x-4">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-weight-scale"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-medium">Peso Recente</div>
+                        <div id="statWeight" class="text-base font-bold text-slate-800">1.2 kg</div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center space-x-4">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-medium">Vacinas em Dia</div>
+                        <div id="statVaccines" class="text-base font-bold text-slate-800">0/0</div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center space-x-4">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-medium">Treinamentos</div>
+                        <div id="statTraining" class="text-base font-bold text-slate-800">0 Concluídos</div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center space-x-4">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-pills"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-medium">Vermífugos</div>
+                        <div id="statDeworm" class="text-base font-bold text-slate-800">Registrados</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weight Log & Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Weight Tracking Card -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs md:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800 flex items-center space-x-2">
+                                <i class="fa-solid fa-chart-line text-amber-500"></i>
+                                <span>Evolução de Peso do Apólo</span>
+                            </h3>
+                            <button onclick="openWeightModal()" class="text-xs bg-amber-50 text-amber-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-amber-100 transition">
+                                + Novo Registro
+                            </button>
+                        </div>
+                        <div id="weightList" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-1">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Tip / Alert Card -->
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 p-5 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 text-amber-800 font-bold mb-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                            <span>Atenção ao Filhote</span>
+                        </div>
+                        <p class="text-xs text-amber-900/80 leading-relaxed">
+                            Lulus da Pomerânia filhotes têm estômago pequeno e correm risco de hipoglicemia (queda de açúcar no sangue). Mantenha ração fresca sempre disponível e ofereça sachê adequado caso ele pareça cabisbaixo.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-amber-200/50 flex items-center justify-between text-xs text-amber-800 font-semibold">
+                        <span>Próxima Refeição:</span>
+                        <span id="nextMealTime" class="bg-amber-200/70 px-2 py-1 rounded">08:00</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: TRAINING -->
+        <section id="tab-training" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Adestramento Positivo 🎓</h2>
+                    <p class="text-slate-500 text-sm">Treine o Apólo usando petiscos e reforço positivo. Cada comando dominado garante pontos!</p>
+                </div>
+                <button onclick="openAddTrainingModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-sm transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Adicionar Comando</span>
+                </button>
+            </div>
+
+            <!-- Training Cards Grid -->
+            <div id="trainingGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Populated via JS -->
+            </div>
+        </section>
+
+        <!-- TAB: HEALTH & VACCINES -->
+        <section id="tab-health" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Carteirinha de Vacinação & Saúde 💉</h2>
+                    <p class="text-slate-500 text-sm">Gerencie vacinas (V8/V10, Raiva, Gripe) e o controle rigoroso de vermífugos e antipulgas.</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="openAddHealthModal('vaccine')" class="bg-amber-500 hover:bg-amber-600 text-white px-3.5 py-2 rounded-xl font-semibold text-xs shadow-sm transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-syringe"></i>
+                        <span>Nova Vacina</span>
+                    </button>
+                    <button onclick="openAddHealthModal('deworm')" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-xl font-semibold text-xs shadow-sm transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-pills"></i>
+                        <span>Novo Vermífugo</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Health Tabs sub-sections -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Vaccines Column -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h3 class="font-bold text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-syringe text-emerald-500"></i>
+                            <span>Vacinas</span>
+                        </h3>
+                        <span class="text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-1 rounded-full">Essencial</span>
+                    </div>
+                    <div id="vaccineList" class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Dewormer / Antiparasite Column -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h3 class="font-bold text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-pills text-purple-500"></i>
+                            <span>Vermífugos & Antipulgas</span>
+                        </h3>
+                        <span class="text-xs bg-purple-50 text-purple-700 font-semibold px-2.5 py-1 rounded-full">Controle</span>
+                    </div>
+                    <div id="dewormList" class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: ROUTINE -->
+        <section id="tab-routine" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Rotina Diária do Filhote ⏰</h2>
+                    <p class="text-slate-500 text-sm">Organize os horários de alimentação, treinos, xixi/cocô e descanso do Apólo.</p>
+                </div>
+                <button onclick="openRoutineModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-sm transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Adicionar Atividade</span>
+                </button>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs">
+                <div id="routineList" class="space-y-3">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: TIPS -->
+        <section id="tab-tips" class="tab-content hidden space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900">Guia Exclusivo para Lulu da Pomerânia 🐶</h2>
+                <p class="text-slate-500 text-sm">Cuidados específicos com pelagem, socialização e características da raça.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-3">
+                    <div class="flex items-center space-x-3 text-amber-600">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                        <h3 class="font-bold text-slate-800">Cuidados com a Pelagem (Double Coat)</h3>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        O Lulu possui subpelo denso. Escove o Apólo pelo menos 3 vezes por semana com rasqueadeira e pente de aço para evitar nós. Evite tosa com máquina curta (tosa bebê extrema) para não correr o risco de Alopecia X (parada no crescimento do pelo).
+                    </p>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-3">
+                    <div class="flex items-center space-x-3 text-emerald-600">
+                        <i class="fa-solid fa-shield-cat text-xl"></i>
+                        <h3 class="font-bold text-slate-800">Socialização Precoce</h3>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Lulus podem se tornar cães "latidores" se não forem socializados. Apresente barulhos diferentes (aspirador de pó, campainha), pessoas e outros cães de forma tranquila e recompensada com petiscos.
+                    </p>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-3">
+                    <div class="flex items-center space-x-3 text-blue-600">
+                        <i class="fa-solid fa-house-chimney text-xl"></i>
+                        <h3 class="font-bold text-slate-800">Local de Xixi (Tapete Higiênico)</h3>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Filhotes têm bexiga pequena. Leve o Apólo para o tapete higiênico logo após ele acordar, depois de comer e após brincadeiras intensas. Faça muita festa e dê petisco quando ele acertar!
+                    </p>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-3">
+                    <div class="flex items-center space-x-3 text-purple-600">
+                        <i class="fa-solid fa-bone text-xl"></i>
+                        <h3 class="font-bold text-slate-800">Troca de Dentes de Leite</h3>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Entre 4 e 7 meses de idade, o Apólo trocará os dentes. Forneça mordedores adequados para aliviar a coceira na gengiva e evite puxar panos ou sapatos.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODALS CONTAINER -->
+
+    <!-- WEIGHT MODAL -->
+    <div id="weightModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg text-slate-900">Registrar Peso do Apólo</h3>
+                <button onclick="closeWeightModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="weightForm" onsubmit="saveWeight(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Data da Medição</label>
+                    <input type="date" id="wDate" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Peso (kg)</label>
+                    <input type="number" step="0.05" id="wVal" placeholder="Ex: 1.35" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500">
+                </div>
+                <div class="flex space-x-2 pt-2">
+                    <button type="button" onclick="closeWeightModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-xl text-sm font-semibold transition">Salvar Peso</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- SEÇÃO SAÚDE -->
-    <div id="saude" class="section active">
-        <h2>Controle de Saúde</h2>
-        <form id="health-form" onsubmit="addHealthItem(event)">
-            <input type="text" id="h-title" placeholder="Ex: Vacina V10 (Dose 1) ou Vermífugo" required>
-            <input type="date" id="h-date" required>
-            <input type="text" id="h-notes" placeholder="Observações (Lote, peso, próxima dose)">
-            <button type="submit" class="submit-btn">Adicionar Registro</button>
-        </form>
-        <h3>Histórico</h3>
-        <ul id="health-list"></ul>
+    <!-- TRAINING MODAL -->
+    <div id="trainingModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg text-slate-900">Novo Comando de Adestramento</h3>
+                <button onclick="closeAddTrainingModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="trainingForm" onsubmit="saveTraining(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Comando</label>
+                    <input type="text" id="tName" placeholder="Ex: Rolar, De patinha..." required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Dica Rápida de Como Ensinar</label>
+                    <textarea id="tDesc" rows="3" placeholder="Ex: Coloque o petisco perto do focinho..." required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500"></textarea>
+                </div>
+                <div class="flex space-x-2 pt-2">
+                    <button type="button" onclick="closeAddTrainingModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-xl text-sm font-semibold transition">Adicionar</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- SEÇÃO ADESTRAMENTO -->
-    <div id="adestramento" class="section">
-        <h2>Progresso de Adestramento</h2>
-        <form id="training-form" onsubmit="addTrainingItem(event)">
-            <input type="text" id="t-command" placeholder="Ex: Xixi no tapete, Senta, Fica" required>
-            <select id="t-status">
-                <option value="Aprendendo">Aprendendo</option>
-                <option value="Dominado">Dominado</option>
-            </select>
-            <button type="submit" class="submit-btn">Adicionar Comando</button>
-        </form>
-        <h3>Comandos e Hábitos</h3>
-        <ul id="training-list"></ul>
+    <!-- HEALTH MODAL -->
+    <div id="healthModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 id="healthModalTitle" class="font-bold text-lg text-slate-900">Adicionar Registro de Saúde</h3>
+                <button onclick="closeAddHealthModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="healthForm" onsubmit="saveHealth(event)" class="space-y-4">
+                <input type="hidden" id="hType" value="vaccine">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome (Ex: V10 1ª Dose / NexGard)</label>
+                    <input type="text" id="hName" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Data Aplicação</label>
+                        <input type="date" id="hDate" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Próxima Dose</label>
+                        <input type="date" id="hNext" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500">
+                    </div>
+                </div>
+                <div class="flex space-x-2 pt-2">
+                    <button type="button" onclick="closeAddHealthModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-xl text-sm font-semibold transition">Salvar Registro</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- SEÇÃO ROTINA -->
-    <div id="rotina" class="section">
-        <h2>Diário e Peso</h2>
-        <form id="routine-form" onsubmit="addRoutineItem(event)">
-            <input type="date" id="r-date" required>
-            <input type="text" id="r-weight" placeholder="Peso atual (ex: 1.2 kg)">
-            <input type="text" id="r-notes" placeholder="Notas do dia (comportamento, alimentação)">
-            <button type="submit" class="submit-btn">Salvar Diário</button>
-        </form>
-        <h3>Histórico de Crescimento</h3>
-        <ul id="routine-list"></ul>
+    <!-- ROUTINE MODAL -->
+    <div id="routineModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg text-slate-900">Nova Atividade de Rotina</h3>
+                <button onclick="closeRoutineModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="routineForm" onsubmit="saveRoutine(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Horário</label>
+                    <input type="time" id="rTime" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Atividade (Ex: Café da manhã, Treino de Fica)</label>
+                    <input type="text" id="rTitle" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-amber-500">
+                </div>
+                <div class="flex space-x-2 pt-2">
+                    <button type="button" onclick="closeRoutineModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-xl text-sm font-semibold transition">Adicionar</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    function switchTab(tabId) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classLis
-t.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
+    <!-- CUSTOM ALERT MODAL -->
+    <div id="customAlert" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl text-center space-y-4">
+            <div id="alertIcon" class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl font-bold">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <h3 id="alertTitle" class="font-bold text-slate-900 text-lg">Aviso</h3>
+            <p id="alertMsg" class="text-xs text-slate-600 leading-relaxed"></p>
+            <button onclick="closeCustomAlert()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-xl text-sm font-semibold transition">Entendi</button>
+        </div>
+    </div>
 
-    // Funções genéricas de armazenamento local (LocalStorage)
-    function getData(key) { return JSON.parse(localStorage.getItem(key)) || []; }
-    function saveData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+    <script>
+        // Apollo's birth date: 10/06/2026
+        const APOLO_BIRTH = new Date(2026, 5, 10); // Month is 0-indexed (5 = June)
 
-    // Saúde
-    function addHealthItem(e) {
-        e.preventDefault();
-        const item = {
-            id: Date.now(),
-            title: document.getElementById('h-title').value,
-            date: document.getElementById('h-date').value,
-            notes: document.getElementById('h-notes').value
+        // Local Storage State initialization with default starter items if empty
+        let appData = JSON.parse(localStorage.getItem('apollo_data')) || {
+            weights: [
+                { date: '2026-06-15', val: 0.8 },
+                { date: '2026-07-15', val: 1.1 },
+                { date: '2026-08-15', val: 1.25 }
+            ],
+            trainings: [
+                { id: 1, name: 'Senta', desc: 'Aproxime o petisco do focinho e suba lentamente para trás.', status: 'mastered' },
+                { id: 2, name: 'Fica', desc: 'Peça para sentar, abra a palma da mão e dê um passo para trás.', status: 'learning' },
+                { id: 3, name: 'Xixi no Tapete', desc: 'Leve ao tapete após acordar e premie com festa.', status: 'mastered' },
+                { id: 4, name: 'Aqui (Vem)', desc: 'Chame animado agachado e recompense com petisco de alto valor.', status: 'todo' }
+            ],
+            vaccines: [
+                { id: 1, name: '1ª Dose V10 / V8', date: '2026-07-10', next: '2026-08-01', done: true },
+                { id: 2, name: '2ª Dose V10 / V8', date: '2026-08-01', next: '2026-08-22', done: true },
+                { id: 3, name: '3ª Dose V10 / V8 + Raiva', date: '2026-08-22', next: '2027-08-22', done: true },
+                { id: 4, name: 'Gripe Canina (Pneumodog)', date: '2026-08-10', next: '2027-08-10', done: true }
+            ],
+            deworm: [
+                { id: 1, name: 'Vermífugo Filhote 1', date: '2026-07-12', next: '2026-07-26', done: true },
+                { id: 2, name: 'Vermífugo Filhote 2', date: '2026-07-26', next: '2026-08-26', done: true },
+                { id: 3, name: 'Antipulgas (NexGard Spectra)', date: '2026-08-15', next: '2026-09-15', done: true }
+            ],
+            routine: [
+                { time: '07:30', title: 'Café da manhã + Água fresca' },
+                { time: '08:00', title: 'Ida ao tapete higiênico / Passeio leve' },
+                { time: '12:30', title: 'Almoço (2ª refeição)' },
+                { time: '15:00', title: 'Sessão de Adestramento (5 min)' },
+                { time: '19:00', title: 'Jantar do Apólo' },
+                { time: '22:00', title: 'Último xixi e hora de dormir' }
+            ]
         };
-        const data = getData('apollo_health');
-        data.push(item);
-        saveData('apollo_health', data);
-        renderHealth();
-        document.getElementById('health-form').reset();
-    }
-    function deleteHealth(id) {
-        saveData('apollo_health', getData('apollo_health').filter(i => i.id !== id));
-        renderHealth();
-    }
-    function renderHealth() {
-        const list = document.getElementById('health-list');
-        list.innerHTML = getData('apollo_health').map(i => `
-            <li><span><strong>${i.title}</strong> (${i.date})<br><small>${i.notes}</small></span>
-            <button class="delete-btn" onclick="deleteHealth(${i.id})">X</button></li>
-        `).join('');
-    }
 
-    // Adestramento
-    function addTrainingItem(e) {
-        e.preventDefault();
-        const item = {
-            id: Date.now(),
-            command: document.getElementById('t-command').value,
-            status: document.getElementById('t-status').value
-        };
-        const data = getData('apollo_training');
-        data.push(item);
-        saveData('apollo_training', data);
-        renderTraining();
-        document.getElementById('training-form').reset();
-    }
-    function deleteTraining(id) {
-        saveData('apollo_training', getData('apollo_training').filter(i => i.id !== id));
-        renderTraining();
-    }
-    function renderTraining() {
-        const list = document.getElementById('training-list');
-        list.innerHTML = getData('apollo_training').map(i => `
-            <li><span><strong>${i.command}</strong> - <em>${i.status}</em></span>
-            <button class="delete-btn" onclick="deleteTraining(${i.id})">X</button></li>
-        `).join('');
-    }
+        function saveData() {
+            localStorage.setItem('apollo_data', JSON.stringify(appData));
+            updateUI();
+        }
 
-    // Rotina
-    function addRoutineItem(e) {
-        e.preventDefault();
-        const item = {
-            id: Date.now(),
-            date: document.getElementById('r-date').value,
-            weight: document.getElementById('r-weight').value,
-            notes: document.getElementById('r-notes').value
-        };
-        const data = getData('apollo_routine');
-        data.push(item);
-        saveData('apollo_routine', data);
-        renderRoutine();
-        document.getElementById('routine-form').reset();
-    }
-    function deleteRoutine(id) {
-        saveData('apollo_routine', getData('apollo_routine').filter(i => i.id !== id));
-        renderRoutine();
-    }
-    function renderRoutine() {
-        const list = document.getElementById('routine-list');
-        list.innerHTML = getData('apollo_routine').map(i => `
-            <li><span><strong>Data: ${i.date}</strong> | Peso: ${i.weight}<br><small>${i.notes}</small></span>
-            <button class="delete-btn" onclick="deleteRoutine(${i.id})">X</button></li>
-        `).join('');
-    }
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+            activeBtn.classList.add('bg-amber-500', 'text-white', 'shadow-sm');
+        }
 
-    // Inicializar telas
-    renderHealth();
-    renderTraining();
+        // Calculate Age accurately
+        function updateAgeDisplay() {
+            const now = new Date();
+            let diffTime = Math.abs(now - APOLO_BIRTH);
+            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            let months = (now.getFullYear() - APOLO_BIRTH.getFullYear()) * 12 + (now.getMonth() - APOLO_BIRTH.getMonth());
+            let days = now.getDate() - APOLO_BIRTH.getDate();
+            if (days < 0) {
+                months--;
+                // rough estimate or simplified days
+            }
+            
+            let ageString = "";
+            if (months > 0) {
+                ageString = `${months} mes${months > 1 ? 'es' : ''} e ${diffDays % 30} dias`;
+            } else {
+                ageString = `${diffDays} dias de vida`;
+            }
+
+            document.getElementById('headerAge').innerText = ageString;
+            document.getElementById('dashboardAge').innerText = ageString;
+        }
+
+        // Update UI Renderers
+        function updateUI() {
+            updateAgeDisplay();
+
+            // Stats
+            if(appData.weights.length > 0) {
+                const latestW = appData.weights[appData.weights.length - 1];
+                document.getElementById('statWeight').innerText = latestW.val + ' kg';
+            }
+
+            const doneVac = appData.vaccines.filter(v => v.done).length;
+            document.getElementById('statVaccines').innerText = `${doneVac}/${appData.vaccines.length}`;
+
+            const masteredTrain = appData.trainings.filter(t => t.status === 'mastered').length;
+            document.getElementById('statTraining').innerText = `${masteredTrain} Concluídos`;
+            document.getElementById('headerPoints').innerText = `${masteredTrain * 50} Pontos`;
+
+            // Render Weight List
+            const wContainer = document.getElementById('weightList');
+            wContainer.innerHTML = appData.weights.slice().reverse().map(w => `
+                <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl text-xs">
+                    <span class="font-medium text-slate-600"><i class="fa-regular fa-calendar mr-2 text-amber-500"></i>${w.date}</span>
+                    <span class="font-bold text-slate-900 bg-white px-2.5 py-1 rounded-lg border border-slate-200">${w.val} kg</span>
+                </div>
+            `).join('');
+
+            // Render Training Grid
+            const tGrid = document.getElementById('trainingGrid');
+            tGrid.innerHTML = appData.trainings.map(t => {
+                let badgeColor = 'bg-slate-100 text-slate-600';
+                let badgeText = 'A Fazer';
+                if(t.status === 'learning') { badgeColor = 'bg-blue-50 text-blue-700'; badgeText = 'Aprendendo'; }
+                if(t.status === 'mastered') { badgeColor = 'bg-emerald-50 text-emerald-700'; badgeText = 'Dominado 🌟'; }
+
+                return `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex flex-col justify-between space-y-3">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="font-bold text-slate-800 text-sm">${t.name}</h4>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${badgeColor}">${badgeText}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 leading-relaxed">${t.desc}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                            <select onchange="updateTrainingStatus(${t.id}, this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-700 font-medium focus:outline-amber-500">
+                                <option value="todo" ${t.status === 'todo' ? 'selected' : ''}>A Fazer</option>
+                                <option value="learning" ${t.status === 'learning' ? 'selected' : ''}>Aprendendo</option>
+                                <option value="mastered" ${t.status === 'mastered' ? 'selected' : ''}>Dominado</option>
+                            </select>
+                            <button onclick="deleteTraining(${t.id})" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Render Vaccines
+            const vContainer = document.getElementById('vaccineList');
+            vContainer.innerHTML = appData.vaccines.map(v => `
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+                    <div>
+                        <div class="font-bold text-slate-800">${v.name}</div>
+                        <div class="text-slate-500 mt-0.5">Aplicada: ${v.date} | Próxima: ${v.next || 'N/A'}</div>
+                    </div>
+                    <button onclick="toggleVaccine(${v.id})" class="w-7 h-7 rounded-lg flex items-center justify-center ${v.done ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'}">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            // Render Deworm
+            const dContainer = document.getElementById('dewormList');
+            dContainer.innerHTML = appData.deworm.map(d => `
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+                    <div>
+                        <div class="font-bold text-slate-800">${d.name}</div>
+                        <div class="text-slate-500 mt-0.5">Aplicada: ${d.date} | Próxima: ${d.next || 'N/A'}</div>
+                    </div>
+                    <button onclick="toggleDeworm(${d.id})" class="w-7 h-7 rounded-lg flex items-center justify-center ${d.done ? 'bg-purple-500 text-white' : 'bg-slate-200 text-slate-500'}">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            // Render Routine
+            const rContainer = document.getElementById('routineList');
+            rContainer.innerHTML = appData.routine.map((r, idx) => `
+                <div class="flex items-center justify-between bg-slate-50 p-3.5 rounded-xl text-xs">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-lg">${r.time}</span>
+                        <span class="font-medium text-slate-700">${r.title}</span>
+                    </div>
+                    <button onclick="deleteRoutine(${idx})" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        // Modal Controls
+        function openWeightModal() { document.getElementById('weightModal').classList.remove('hidden'); }
+        function closeWeightModal() { document.getElementById('weightModal').classList.add('hidden'); }
+
+        function openAddTrainingModal() { document.getElementById('trainingModal').classList.remove('hidden'); }
+        function closeAddTrainingModal() { document.getElementById('trainingModal').classList.add('hidden'); }
+
+        let currentHealthType = 'vaccine';
+        function openAddHealthModal(type) {
+            currentHealthType = type;
+            document.getElementById('hType').value = type;
+            document.getElementById('healthModalTitle').innerText = type === 'vaccine' ? 'Nova Vacina' : 'Novo Vermífugo / Antipulgas';
+            document.getElementById('healthModal').classList.remove('hidden');
+        }
+        function closeAddHealthModal() { document.getElementById('healthModal').classList.add('hidden'); }
+
+        function openRoutineModal() { document.getElementById('routineModal').classList.remove('hidden'); }
+        function closeRoutineModal() { document.getElementById('routineModal').classList.add('hidden'); }
+
+        // Form handlers
+        function saveWeight(e) {
+            e.preventDefault();
+            const date = document.getElementById('wDate').value;
+            const val = parseFloat(document.getElementById('wVal').value);
+            appData.weights.push({ date, val });
+            saveData();
+            closeWeightModal();
+            document.getElementById('weightForm').reset();
+        }
+
+        function saveTraining(e) {
+            e.preventDefault();
+            const name = document.getElementById('tName').value;
+            const desc = document.getElementById('tDesc').value;
+            appData.trainings.push({ id: Date.now(), name, desc, status: 'todo' });
+            saveData();
+            closeAddTrainingModal();
+            document.getElementById('trainingForm').reset();
+        }
+
+        function updateTrainingStatus(id, status) {
+            const t = appData.trainings.find(x => x.id === id);
+            if(t) {
+                t.status = status;
+                saveData();
+            }
+        }
+
+        function deleteTraining(id) {
+            appData.trainings = appData.trainings.filter(x => x.id !== id);
+            saveData();
+        }
+
+        function saveHealth(e) {
+            e.preventDefault();
+            const name = document.getElementById('hName').value;
+            const date = document.getElementById('hDate').value;
+            const next = document.getElementById('hNext').value;
+            const type = document.getElementById('hType').value;
+
+            if(type === 'vaccine') {
+                appData.vaccines.push({ id: Date.now(), name, date, next, done: true });
+            } else {
+                appData.deworm.push({ id: Date.now(), name, date, next, done: true });
+            }
+            saveData();
+            closeAddHealthModal();
+            document.getElementById('healthForm').reset();
+        }
+
+        function toggleVaccine(id) {
+            const v = appData.vaccines.find(x => x.id === id);
+            if(v) { v.done = !v.done; saveData(); }
+        }
+
+        function toggleDeworm(id) {
+            const d = appData.deworm.find(x => x.id === id);
+            if(d) { d.done = !d.done; saveData(); }
+        }
+
+        function saveRoutine(e) {
+            e.preventDefault();
+            const time = document.getElementById('rTime').value;
+            const title = document.getElementById('rTitle').value;
+            appData.routine.push({ time, title });
+            appData.routine.sort((a,b) => a.time.localeCompare(b.time));
+            saveData();
+            closeRoutineModal();
+            document.getElementById('routineForm').reset();
+        }
+
+        function deleteRoutine(idx) {
+            appData.routine.splice(idx, 1);
+            saveData();
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlert').classList.add('hidden');
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            updateUI();
+        }
+    </script>
+</body>
+</html>
     renderRoutine();
 </script>
 </body>
